@@ -54,42 +54,38 @@ public class SearchEngine {
     private void handleQueryCommand(String command) {
         String query = command.substring(6).trim();  
         try {
-            Set<Integer> results = evaluateQuery(query);
-            if (results.isEmpty()) {
+            Map<Integer, Double> relevanceScores = evaluateQuery(query);
+            if (relevanceScores.isEmpty()) {
                 System.out.println("query results");
             } else {
                 System.out.print("query results");
-                results.forEach(id -> System.out.print(" " + id));
+                relevanceScores.keySet().forEach(id -> System.out.print(" " + id));
                 System.out.println();
             }
         } catch (Exception e) {
             System.out.println("query error " + e.getMessage());
         }
     }
+    
 
-    private Set<Integer> evaluateQuery(String query) {
-        Set<Integer> results = new HashSet<>();
+    private Map<Integer, Double> evaluateQuery(String query) {
+        Map<Integer, Double> relevanceScores = new HashMap<>();
         String[] tokens = query.split("\\s+");
     
-        // Initialize the results set with the document IDs containing the first token
-        if (tokenIndex.containsKey(tokens[0])) {
-            results.addAll(tokenIndex.get(tokens[0]));
-        }
-    
-        // Process subsequent tokens and perform set operations to refine the results
-        for (int i = 1; i < tokens.length; i++) {
-            String token = tokens[i];
+        for (String token : tokens) {
             if (tokenIndex.containsKey(token)) {
                 Set<Integer> matchingDocs = tokenIndex.get(token);
-                results.retainAll(matchingDocs); // Intersection with the current token's documents
-            } else {
-                // No documents contain this token, so the result set should be empty
-                results.clear();
-                break;
+                double idf = Math.log((double) docIndex.size() / matchingDocs.size()); // Inverse Document Frequency
+                for (int docId : matchingDocs) {
+                    int tf = Collections.frequency(docIndex.get(docId), token); // Term Frequency in the document
+                    double tfidf = tf * idf; // TF-IDF score
+                    relevanceScores.put(docId, relevanceScores.getOrDefault(docId, 0.0) + tfidf); // Update relevance score
+                }
             }
         }
     
-        return results;
+        return relevanceScores;
     }
+    
     
 }
