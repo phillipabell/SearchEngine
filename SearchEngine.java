@@ -68,11 +68,28 @@ public class SearchEngine {
     }
 
     private Set<Integer> evaluateQuery(String query) {
-        // Implementation of query parsing and execution logic
         Set<Integer> results = new HashSet<>();
-        if (tokenIndex.containsKey(query)) {
-            results.addAll(tokenIndex.get(query));
+        String[] tokens = query.split("\\s+");
+    
+        // Initialize the results set with the document IDs containing the first token
+        if (tokenIndex.containsKey(tokens[0])) {
+            results.addAll(tokenIndex.get(tokens[0]));
         }
+    
+        // Process subsequent tokens and perform set operations to refine the results
+        for (int i = 1; i < tokens.length; i++) {
+            String token = tokens[i];
+            if (tokenIndex.containsKey(token)) {
+                Set<Integer> matchingDocs = tokenIndex.get(token);
+                results.retainAll(matchingDocs); // Intersection with the current token's documents
+            } else {
+                // No documents contain this token, so the result set should be empty
+                results.clear();
+                break;
+            }
+        }
+    
         return results;
     }
+    
 }
