@@ -75,11 +75,11 @@ public class SearchEngine {
         for (String token : tokens) {
             if (tokenIndex.containsKey(token)) {
                 Set<Integer> matchingDocs = tokenIndex.get(token);
-                double idf = Math.log((double) docIndex.size() / matchingDocs.size()); // Inverse Document Frequency
+                double idf = Math.log((double) docIndex.size() / matchingDocs.size()); 
                 for (int docId : matchingDocs) {
-                    int tf = Collections.frequency(docIndex.get(docId), token); // Term Frequency in the document
-                    double tfidf = tf * idf; // TF-IDF score
-                    relevanceScores.put(docId, relevanceScores.getOrDefault(docId, 0.0) + tfidf); // Update relevance score
+                    int tf = Collections.frequency(docIndex.get(docId), token); 
+                    double tfidf = tf * idf; 
+                    relevanceScores.put(docId, relevanceScores.getOrDefault(docId, 0.0) + tfidf); 
                 }
             }
         }
