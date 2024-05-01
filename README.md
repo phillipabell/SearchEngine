@@ -1,7 +1,3 @@
-Below is the text transformed into Markdown format, with appropriate headers, code blocks, and list formats to make it more readable and organized.
-
----
-
 # Search Engine Coding Challenge
 
 ## Implement a Simple Search Engine
