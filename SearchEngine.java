@@ -27,7 +27,17 @@ public class SearchEngine {
         try {
             int docId = Integer.parseInt(parts[1]);
             Set<String> tokens = new HashSet<>(Arrays.asList(parts).subList(2, parts.length));
-
+    
+            if (docIndex.containsKey(docId)) {
+                Set<String> previousTokens = docIndex.get(docId);
+                previousTokens.forEach(token -> {
+                    tokenIndex.get(token).remove(docId);
+                    if (tokenIndex.get(token).isEmpty()) {
+                        tokenIndex.remove(token);
+                    }
+                });
+            }
+    
             docIndex.put(docId, tokens);
             tokens.forEach(token -> {
                 tokenIndex.putIfAbsent(token, new HashSet<>());
@@ -39,6 +49,7 @@ public class SearchEngine {
             System.out.println("index error " + e.getMessage());
         }
     }
+    
 
     private void handleQueryCommand(String command) {
         String query = command.substring(6).trim();  
